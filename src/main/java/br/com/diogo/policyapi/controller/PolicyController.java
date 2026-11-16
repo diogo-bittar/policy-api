@@ -7,6 +7,8 @@ import br.com.diogo.policyapi.repository.PolicyRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/policies")
 public class PolicyController {
@@ -21,6 +23,17 @@ public class PolicyController {
     public PolicyResponse create(@RequestBody PolicyRequest request){
         Policy newPolicy = new Policy(request.insuredName(), request.premiumValue(), request.category());
         Policy saved = repository.save(newPolicy);
-        return new PolicyResponse(saved.getId(), saved.getInsuredName(), saved.getPremiumValue(), saved.getCategory());
+        return toResponse(saved);
+    }
+
+    @GetMapping
+    public List<PolicyResponse> list() {
+        return repository.findAll().stream().map(p -> toResponse(p)).toList();
+    }
+
+    private PolicyResponse toResponse(Policy p){
+        return new PolicyResponse(p.getId(), p.getInsuredName(), p.getPremiumValue(), p.getCategory());
     }
 }
+
+
