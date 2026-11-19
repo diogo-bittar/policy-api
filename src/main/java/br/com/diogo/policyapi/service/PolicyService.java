@@ -5,7 +5,7 @@ import br.com.diogo.policyapi.dto.PolicyResponse;
 import br.com.diogo.policyapi.entity.Policy;
 import br.com.diogo.policyapi.repository.PolicyRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
+import br.com.diogo.policyapi.exception.ValuePremiumException;
 
 import java.util.List;
 
@@ -18,6 +18,9 @@ public class PolicyService {
     }
 
     public PolicyResponse create( PolicyRequest request){
+        if(request.premiumValue() <= 0){
+            throw new ValuePremiumException("Value invalid");
+        }
         Policy newPolicy = new Policy(request.insuredName(), request.premiumValue(), request.category());
         Policy saved = repository.save(newPolicy);
         return toResponse(saved);
